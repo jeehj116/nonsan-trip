@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>논산 여행 코스 추천</title>
+<style>
+:root{--bg:#fbf7f1;--card:#fff;--text:#2b2420;--sub:#7a6e65;--line:#e9dfd3;--accent:#d8473b;--accent2:#fdeceb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1715;--card:#26201d;--text:#f3ece6;--sub:#a99d93;--line:#3a312c;--accent:#ff7a6c;--accent2:#3a2623}}
+:root[data-theme="dark"]{--bg:#1b1715;--card:#26201d;--text:#f3ece6;--sub:#a99d93;--line:#3a312c;--accent:#ff7a6c;--accent2:#3a2623}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:32px 20px 56px}
+h1{font-size:1.9rem;margin:0 0 6px}
+.lead{color:var(--sub);margin:0 0 24px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.opt{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:20px 14px;text-align:center;cursor:pointer;font:inherit;color:inherit;transition:.15s}
+.opt:hover{border-color:var(--accent)}
+.opt.on{border-color:var(--accent);background:var(--accent2)}
+.opt .ic{font-size:2rem;display:block}
+.opt b{display:block;margin-top:4px;font-size:1.05rem}
+.opt small{color:var(--sub)}
+#result{margin-top:28px}
+.head h2{margin:0 0 4px;font-size:1.4rem}
+.head p{margin:0 0 18px;color:var(--sub)}
+.step{display:flex;gap:14px;position:relative;padding-bottom:18px}
+.step:not(:last-child)::before{content:"";position:absolute;left:15px;top:34px;bottom:0;width:2px;background:var(--line)}
+.num{flex:none;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.9rem}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;flex:1}
+.box .t{font-size:.8rem;color:var(--accent);font-weight:700}
+.box h3{margin:0 0 2px;font-size:1.05rem}
+.box p{margin:0;color:var(--sub);font-size:.93rem}
+.note{font-size:.82rem;color:var(--sub);margin-top:10px}
+.hint{text-align:center;color:var(--sub);padding:28px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>논산 여행 코스 🍓</h1>
+  <p class="lead">어떤 여행을 원하세요? 하나를 골라보세요.</p>
+  <div class="grid" id="grid"></div>
+  <div id="result"><div class="hint">위에서 여행 스타일을 선택하면 코스가 나타나요.</div></div>
+</div>
+<script>
+var DATA={
+walk:{ic:"🚶",name:"뚜벅이",sub:"대중교통 + 걷기",title:"뚜벅이 코스: 강경 근대 골목 도보 여행",desc:"논산역에서 버스로 강경으로 이동해, 걸어서 둘러보는 당일 코스",steps:[
+["오전","논산역에서 강경 이동","버스로 강경 읍내까지 이동해요. 배차 간격은 미리 확인하세요."],
+["오전","강경 근대문화 골목","옛 건물과 골목이 이어져 걸으며 구경하기 좋아요."],
+["점심","강경 젓갈 백반","젓갈 골목 근처 식당에서 한 끼."],
+["오후","강경 젓갈시장 구경","젓갈 가게를 둘러보고 선물을 골라요."],
+["오후","옥녀봉 전망","금강이 내려다보이는 가벼운 산책 코스."],
+["저녁","금강 노을 보고 귀가","강변에서 노을을 보고 버스로 돌아와요."]]},
+tour:{ic:"🏯",name:"관광",sub:"명소 중심",title:"관광 코스: 논산 대표 명소 한 바퀴",desc:"자동차 기준, 역사와 풍경을 하루에 보는 코스",steps:[
+["오전","관촉사 (은진미륵)","큰 석불 입상으로 유명한 논산의 대표 사찰."],
+["점심","논산 시내 식사","한식당에서 점심."],
+["오후","선샤인랜드","근대 드라마 세트 분위기의 촬영지 테마 공간."],
+["오후","탑정호 출렁다리","호수 위를 걷는 긴 출렁다리와 수변 풍경."],
+["저녁","탑정호 노을·야경","호수 주변에서 해 질 녘 산책."]]},
+food:{ic:"🍽️",name:"식도락",sub:"맛집·특산물",title:"식도락 코스: 논산의 맛 따라가기",desc:"딸기, 젓갈, 곶감 등 논산 먹거리 중심 코스",steps:[
+["오전","논산 딸기 디저트","딸기 철에는 딸기 디저트 카페를 먼저 들러요."],
+["점심","강경 젓갈 백반","젓갈이 곁들여진 백반 한 상."],
+["오후","강경 젓갈시장","젓갈 시식과 구매."],
+["오후","지역 시장 간식","시장에서 간식과 특산물 구경."],
+["저녁","향토 음식 저녁","논산 시내에서 저녁. 특산물 요리를 찾아보세요."]],
+note:"딸기는 겨울~봄이 제철이고, 곶감은 가을~겨울이에요. 계절을 확인하세요."},
+family:{ic:"👨‍👩‍👧",name:"가족 체험",sub:"아이와 함께",title:"가족 체험 코스: 아이와 함께 즐기기",desc:"체험과 놀거리를 섞은 가족 당일 코스",steps:[
+["오전","딸기 따기 체험 (철 한정)","체험 농장을 사전에 예약하고 방문해요."],
+["점심","가족 식사","아이가 먹기 편한 메뉴로 점심."],
+["오후","선샤인랜드","아이들과 사진 찍고 구경하기 좋아요."],
+["오후","백제군사박물관","역사를 쉽게 보는 전시 공간."],
+["저녁","탑정호 수변 산책","가볍게 걸으며 하루 마무리."]]}
+};
+var keys=Object.keys(DATA),grid=document.getElementById("grid"),res=document.getElementById("result");
+keys.forEach(function(k){var d=DATA[k],b=document.createElement("button");b.className="opt";b.id="o-"+k;
+b.innerHTML='<span class="ic">'+d.ic+'</span><b>'+d.name+'</b><small>'+d.sub+'</small>';
+b.onclick=function(){show(k)};grid.appendChild(b)});
+function show(k){var d=DATA[k];
+keys.forEach(function(x){document.getElementById("o-"+x).classList.toggle("on",x===k)});
+var h='<div class="head"><h2>'+d.title+'</h2><p>'+d.desc+'</p></div>';
+d.steps.forEach(function(s,i){h+='<div class="step"><div class="num">'+(i+1)+'</div><div class="box"><div class="t">'+s[0]+'</div><h3>'+s[1]+'</h3><p>'+s[2]+'</p></div></div>'});
+h+='<div class="note">'+(d.note?d.note+"<br>":"")+"※ 운영시간과 휴무일은 방문 전에 꼭 확인하세요.</div>";
+res.innerHTML=h;
+try{history.replaceState(null,"","#"+k)}catch(e){}
+res.scrollIntoView({behavior:"smooth",block:"start"})}
+var h0=(location.hash||"").slice(1);if(DATA[h0])show(h0);
+</script>
+</body>
+</html>
