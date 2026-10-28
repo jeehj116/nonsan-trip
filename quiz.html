@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>논산 역사 퀴즈</title>
+<style>
+:root{--bg:#fbf7f1;--card:#fff;--text:#2b2420;--sub:#7a6e65;--line:#e9dfd3;--accent:#d8473b;--accent2:#fdeceb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1715;--card:#26201d;--text:#f3ece6;--sub:#a99d93;--line:#3a312c;--accent:#ff7a6c;--accent2:#3a2623}}
+:root[data-theme="dark"]{--bg:#1b1715;--card:#26201d;--text:#f3ece6;--sub:#a99d93;--line:#3a312c;--accent:#ff7a6c;--accent2:#3a2623}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;line-height:1.6}
+.wrap{max-width:560px;margin:0 auto;padding:28px 20px 56px}
+.nav a{display:inline-block;color:var(--accent);border:1.5px solid var(--accent);background:var(--accent2);text-decoration:none;padding:6px 12px;border-radius:12px;font-weight:700;font-size:.85rem;margin-right:6px}
+h1{font-size:1.7rem;margin:18px 0 6px}
+.lead{color:var(--sub);margin:0 0 20px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:20px 18px}
+.prog{font-size:.85rem;color:var(--accent);font-weight:700;margin-bottom:6px}
+.bar{height:6px;border-radius:3px;background:var(--line);margin-bottom:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:.2s}
+.q{font-size:1.1rem;font-weight:700;margin:0 0 14px}
+.opt{display:block;width:100%;text-align:left;font:inherit;color:inherit;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+.opt:hover{border-color:var(--accent)}
+.big{font-size:1.25rem;font-weight:800;margin:0 0 6px}
+.sub{color:var(--sub);font-size:.92rem;margin:0 0 12px}
+.btn{display:inline-block;font:inherit;font-weight:700;background:var(--accent);color:#fff;border:0;border-radius:12px;padding:10px 18px;cursor:pointer;text-decoration:none}
+.exp{margin:12px 0 0;padding:0;list-style:none;font-size:.88rem;color:var(--sub)}
+.exp li{margin-bottom:6px}
+.slot{font-size:1.9rem;font-weight:800;text-align:center;padding:26px 8px;margin:10px 0;border-radius:14px;background:var(--accent2);color:var(--accent);min-height:96px;word-break:keep-all}
+.slot.done{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.06)}100%{transform:scale(1)}}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.links a{font-size:.88rem;text-decoration:none;padding:7px 12px;border-radius:10px;border:1px solid var(--accent);color:var(--accent);background:var(--accent2)}
+.row{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav"><a href="community.html">← 커뮤니티</a><a href="index.html">🏠 홈</a></div>
+  <h1>🧩 논산 역사 퀴즈</h1>
+  <p class="lead">4문제를 모두 맞히면 <b>특별 맛집</b>이 공개돼요!</p>
+  <div class="card" id="app"></div>
+</div>
+<script>
+var Q=[
+{q:"660년, 계백 장군이 이끄는 백제 결사대가 신라군과 맞서 싸운 '황산벌 전투'가 벌어진 지역은?",o:["논산","공주","부여","익산"],a:0,e:"황산벌은 지금의 논산 일대로, 백제의 마지막 큰 전투가 벌어진 곳으로 알려져 있어요."},
+{q:"논산 관촉사에 있는 커다란 석조미륵보살입상의 별칭은?",o:["은진미륵","서산마애불","석굴암 본존불","법주사 미륵대불"],a:0,e:"관촉사의 석조미륵보살입상은 '은진미륵'이라 불리는 고려 시대의 큰 석불이에요."},
+{q:"논산 개태사는 후백제를 무너뜨린 뒤, 어느 왕이 이를 기념해 세운 절일까요?",o:["고려 태조 왕건","조선 태조 이성계","신라 선덕여왕","백제 의자왕"],a:0,e:"개태사는 고려 태조 왕건이 후백제를 평정한 뒤 세운 사찰이에요."},
+{q:"논산 연산면의 돈암서원에 모셔진, 조선 시대 '예학의 대가'로 불리는 학자는?",o:["김장생","이황","정약용","이순신"],a:0,e:"돈암서원은 예학의 대가 사계 김장생을 모신 서원이에요."}
+];
+var FOOD=[["반월소바","논산 반월소바"],["알바노","논산 알바노"],["백년집","논산 백년집"],["강경 해물칼국수","강경 해물칼국수"]];
+var app=document.getElementById("app"),idx=0,picks=[],cf=null,raf=0;
+function mk(tag,cls,txt,par){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;if(par)par.appendChild(e);return e}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function K(q){return "https://map.kakao.com/link/search/"+encodeURIComponent(q)}
+function N(q){return "https://map.naver.com/p/search/"+encodeURIComponent(q)}
+function start(){stopConfetti();idx=0;picks=[];showQ()}
+function showQ(){
+app.innerHTML="";var d=Q[idx];
+mk("div","prog","문제 "+(idx+1)+" / "+Q.length,app);
+var b=mk("div","bar",undefined,app);mk("i","",undefined,b).style.width=(idx/Q.length*100)+"%";
+mk("p","q",d.q,app);
+shuffle(d.o.map(function(t,i){return{t:t,i:i}})).forEach(function(o){
+var btn=mk("button","opt",o.t,app);
+btn.onclick=function(){picks.push(o.i===d.a);idx++;idx<Q.length?showQ():result()}})}
+function result(){
+var ok=picks.filter(Boolean).length;app.innerHTML="";
+if(ok===Q.length){
+reveal()}
+else{
+var wrong=[];picks.forEach(function(p,i){if(!p)wrong.push(i+1)});
+mk("p","big",ok+" / "+Q.length+" 정답",app);
+mk("p","sub",wrong.join(", ")+"번 문제를 놓쳤어요. 모두 맞히면 특별 맛집이 공개돼요!",app);
+var ul=mk("ul","exp",undefined,app);
+wrong.forEach(function(n){mk("li","","Q"+n+". "+Q[n-1].e,ul)});
+var r=mk("div","row",undefined,app);mk("button","btn","다시 도전",r).onclick=start}}
+function reveal(){
+var food=FOOD[Math.floor(Math.random()*FOOD.length)];
+mk("p","big","🎉 짜잔! 4문제 모두 정답!",app);
+mk("p","sub","오늘의 특별 맛집은...",app);
+mk("div","slot done",food[0],app);
+var l=mk("div","links",undefined,app);
+[["📍 카카오맵",K(food[1])],["📍 네이버지도",N(food[1])]].forEach(function(x){var a=mk("a","",x[0],l);a.href=x[1];a.target="_blank";a.rel="noopener"});
+var r=mk("div","row",undefined,app);mk("button","btn","퀴즈 다시 풀기",r).onclick=start;
+var c=mk("a","btn","커뮤니티로",r);c.href="community.html";c.style.background="var(--card)";c.style.color="var(--accent)";c.style.border="1.5px solid var(--accent)";
+confetti()}
+function stopConfetti(){if(cf){cf.remove();cf=null}cancelAnimationFrame(raf)}
+function confetti(){
+if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+stopConfetti();
+var cv=document.createElement("canvas");cv.style.cssText="position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:99";
+document.body.appendChild(cv);cf=cv;
+var W=cv.width=window.innerWidth,H=cv.height=window.innerHeight,ctx=cv.getContext("2d"),P=[],cols=["#d8473b","#ffb703","#2a9d8f","#3a86ff","#ff7a6c","#8338ec"];
+function burst(x,y,n){for(var i=0;i<n;i++){var a=Math.random()*Math.PI*2,v=4+Math.random()*9;P.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,w:5+Math.random()*6,h:3+Math.random()*5,c:cols[i%cols.length],r:Math.random()*6,vr:(Math.random()-.5)*.4,life:0})}}
+burst(W/2,H*.4,120);
+setTimeout(function(){if(cf===cv){burst(W*.25,H*.5,70);burst(W*.75,H*.5,70)}},300);
+var t0=performance.now();
+(function f(t){ctx.clearRect(0,0,W,H);
+P.forEach(function(p){p.vy+=.18;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life++;
+ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.globalAlpha=Math.max(0,1-p.life/150);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});
+if(t-t0<3400)raf=requestAnimationFrame(f);else stopConfetti()})(t0)}
+start();
+</script>
+</body>
+</html>
