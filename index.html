@@ -30,8 +30,6 @@ h1{font-size:1.9rem;margin:0 0 6px}
 .box .t{font-size:.8rem;color:var(--accent);font-weight:700}
 .box h3{margin:0 0 2px;font-size:1.05rem}
 .box p{margin:0;color:var(--sub);font-size:.93rem}
-.parking{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--park2);font-size:.88rem}
-.parking b{color:var(--park)}
 .btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .btns a{font-size:.83rem;text-decoration:none;padding:5px 10px;border-radius:8px;border:1px solid var(--accent);color:var(--accent);background:var(--accent2)}
 .btns a.pk{border-color:var(--park);color:var(--park);background:var(--park2)}
@@ -99,9 +97,8 @@ d.steps.forEach(function(s,i){
 var pq=s.pq||(s.q+" 주차장");
 h+='<div class="step"><div class="num">'+(i+1)+'</div><div class="box">'
 +'<div class="t">'+s.t+'</div><h3>'+s.n+'</h3><p>'+s.d+'</p>'
-+(d.park&&s.pn?'<div class="parking"><b>🅿️ 주차</b> '+s.pn+'</div>':'')
 +'<div class="btns"><button class="pin" data-q="'+s.q+'">📍 지도 보기</button>'
-+(d.park?'<a class="pk" target="_blank" rel="noopener" href="'+K(pq)+'">🅿️ 주변 주차장 (카카오)</a><a class="pk" target="_blank" rel="noopener" href="'+N(pq)+'">🅿️ 주변 주차장 (네이버)</a>':'')
++(d.park?'<a class="pk" target="_blank" rel="noopener" href="'+N(pq)+'" title="'+(s.pn||'주변 주차장')+'" aria-label="주변 주차장 (네이버지도)">🅿️</a>':'')
 +'</div><div class="mapbox" hidden></div></div></div>'});
 h+='<div class="note">'+(d.note?d.note+"<br>":"")+"※ 운영시간, 휴무일, 주차 가능 여부는 방문 전에 꼭 확인하세요.</div>";
 res.innerHTML=h;
