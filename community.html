@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>논산 코스 공유 커뮤니티</title>
+<style>
+:root{--bg:#fbf7f1;--card:#fff;--text:#2b2420;--sub:#7a6e65;--line:#e9dfd3;--accent:#d8473b;--accent2:#fdeceb;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1715;--card:#26201d;--text:#f3ece6;--sub:#a99d93;--line:#3a312c;--accent:#ff7a6c;--accent2:#3a2623}}
+:root[data-theme="dark"]{--bg:#1b1715;--card:#26201d;--text:#f3ece6;--sub:#a99d93;--line:#3a312c;--accent:#ff7a6c;--accent2:#3a2623}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR",-apple-system,"Malgun Gothic",sans-serif;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 56px}
+a.back{color:var(--sub);text-decoration:none;font-size:.9rem}
+h1{font-size:1.7rem;margin:10px 0 6px}
+.lead{color:var(--sub);margin:0 0 18px}
+.write{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:10px 18px;border-radius:12px;font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 14px}
+.chip{font:inherit;font-size:.88rem;padding:5px 12px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+.chip.on{border-color:var(--accent);background:var(--accent2);color:var(--accent)}
+details.post{background:var(--card);border:1.5px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
+details.post[open]{border-color:var(--accent)}
+details.post summary{list-style:none;cursor:pointer;padding:14px 16px;position:relative;padding-right:40px}
+details.post summary::-webkit-details-marker{display:none}
+.chev{position:absolute;right:16px;top:50%;margin-top:-14px;font-size:1.5rem;color:var(--sub);transition:.15s}
+details[open] .chev{transform:rotate(90deg)}
+.tag{font-size:.78rem;color:var(--accent);font-weight:700}
+.post h3{margin:2px 0 2px;font-size:1.08rem}
+.meta{font-size:.8rem;color:var(--sub)}
+.inner{padding:2px 16px 14px}
+.step{display:flex;gap:12px;position:relative;padding-bottom:14px}
+.step:not(:last-child)::before{content:"";position:absolute;left:13px;top:30px;bottom:0;width:2px;background:var(--line)}
+.num{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700;font-size:.82rem}
+.sbox{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.sbox h4{margin:0;font-size:1rem}
+.sbox p{margin:2px 0 0;color:var(--sub);font-size:.9rem;white-space:pre-wrap;word-break:break-word}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.btns a{font-size:.8rem;text-decoration:none;padding:4px 9px;border-radius:8px;border:1px solid var(--accent);color:var(--accent);background:var(--accent2)}
+.body{white-space:pre-wrap;word-break:break-word;font-size:.95rem}
+.tip{margin-top:4px;padding:8px 10px;border-radius:8px;background:var(--accent2);font-size:.88rem;white-space:pre-wrap;word-break:break-word}
+.msg{text-align:center;color:var(--sub);padding:28px 8px;white-space:pre-wrap}
+.note{font-size:.82rem;color:var(--sub);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← 코스 보러 가기</a>
+  <h1>💬 논산 코스 공유</h1>
+  <p class="lead">내가 다녀온 논산 코스를 남기고, 다른 사람의 코스도 구경해 보세요. 제목을 누르면 코스가 펼쳐져요.</p>
+  <a class="write" id="write" target="_blank" rel="noopener" href="#">✏️ 내 코스 공유하기</a>
+  <div class="chips" id="chips"></div>
+  <div id="list"><div class="msg">불러오는 중...</div></div>
+  <div class="note">※ 이름, 연락처 같은 개인정보는 적지 마세요. 부적절한 글은 관리자가 확인 후 지울 수 있어요.</div>
+</div>
+<script>
+/* ===== 여기 값만 본인 것으로 바꾸세요 ===== */
+var FORM_URL="";  // 구글 폼 '보내기 → 링크'로 복사한 주소
+var CSV_URL="";   // 구글 시트 '웹에 게시 → CSV'로 복사한 주소
+var REQUIRE_APPROVAL=true; // true: 시트 '공개' 칸에 O를 적은 글만 표시 / false: 올라오는 즉시 모두 표시
+var MAX=8;        // 폼의 코스 칸 개수 (코스1 ~ 코스8)
+/* ========================================= */
+var STYLES=["전체","뚜벅이","관광","식도락","가족 체험","기타"],cur="전체",posts=[];
+var list=document.getElementById("list"),chips=document.getElementById("chips"),wr=document.getElementById("write");
+if(FORM_URL)wr.href=FORM_URL;else wr.style.display="none";
+function mk(tag,cls,txt,par){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!==undefined)e.textContent=txt;if(par)par.appendChild(e);return e}
+function msg(t){list.innerHTML="";mk("div","msg",t,list)}
+function K(q){return "https://map.kakao.com/link/search/"+encodeURIComponent(q)}
+function N(q){return "https://map.naver.com/p/search/"+encodeURIComponent(q)}
+function parseCSV(t){var r=[],row=[],f="",q=false;
+for(var i=0;i<t.length;i++){var c=t[i];
+if(q){if(c=='"'){if(t[i+1]=='"'){f+='"';i++}else q=false}else f+=c}
+else if(c=='"')q=true;
+else if(c==","){row.push(f);f=""}
+else if(c=="\n"){row.push(f);r.push(row);row=[];f=""}
+else if(c!="\r")f+=c}
+if(f!==""||row.length){row.push(f);r.push(row)}return r}
+function render(){
+chips.innerHTML="";
+STYLES.forEach(function(s){var b=mk("button","chip"+(s===cur?" on":""),s,chips);b.onclick=function(){cur=s;render()}});
+var shown=posts.filter(function(p){return cur==="전체"||p.style===cur});
+if(!shown.length){msg("아직 올라온 코스가 없어요.\n첫 번째 코스를 공유해 보세요!");return}
+list.innerHTML="";
+shown.forEach(function(p){
+var d=mk("details","post",undefined,list),sm=mk("summary","",undefined,d);
+mk("div","tag",(p.style||"기타")+(p.stops.length?" · "+p.stops.length+"곳":""),sm);
+mk("h3","",p.title||"(제목 없음)",sm);
+mk("div","meta","by "+(p.nick||"익명")+(p.date?" · "+p.date:""),sm);
+mk("span","chev","›",sm);
+var inn=mk("div","inner",undefined,d);
+if(p.stops.length){p.stops.forEach(function(s,i){
+var st=mk("div","step",undefined,inn);mk("div","num",String(i+1),st);
+var bx=mk("div","sbox",undefined,st);mk("h4","",s.place,bx);if(s.desc)mk("p","",s.desc,bx);
+var q=s.place.indexOf("논산")>-1?s.place:"논산 "+s.place,bt=mk("div","btns",undefined,bx);
+[["📍 카카오맵",K(q)],["📍 네이버지도",N(q)]].forEach(function(l){var a=mk("a","",l[0],bt);a.href=l[1];a.target="_blank";a.rel="noopener"})})}
+else if(p.body)mk("div","body",p.body,inn);
+if(p.tip)mk("div","tip","💡 "+p.tip,inn)})}
+function load(){
+if(!CSV_URL){msg("아직 연결 전이에요.\n파일 위쪽의 CSV_URL에 구글 시트 주소를 넣어주세요.");return}
+fetch(CSV_URL+(CSV_URL.indexOf("?")>-1?"&":"?")+"t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
+var rows=parseCSV(t);if(!rows.length){posts=[];render();return}
+var h=rows[0].map(function(x){return x.trim()}),ix=function(n){return h.indexOf(n)};
+var I={nick:ix("닉네임"),title:ix("코스 제목"),style:ix("여행 스타일"),body:ix("코스 내용"),tip:ix("한 줄 팁"),ok:ix("공개")},S=[];
+for(var n=1;n<=MAX;n++)S.push([ix("코스"+n+" 장소"),ix("코스"+n+" 설명")]);
+if(I.title<0||S[0][0]<0){msg("시트의 첫 줄 제목이 폼 질문과 달라요.\n질문 제목(코스 제목, 코스1 장소 등)을 확인해 주세요.");return}
+function g(r,k){return I[k]>=0&&r[I[k]]?r[I[k]].trim():""}
+posts=rows.slice(1).map(function(r){
+var stops=[];S.forEach(function(c){var pl=c[0]>=0&&r[c[0]]?r[c[0]].trim():"";if(pl)stops.push({place:pl,desc:c[1]>=0&&r[c[1]]?r[c[1]].trim():""})});
+return{date:(r[0]||"").split(" ").slice(0,3).join(" "),nick:g(r,"nick"),title:g(r,"title"),style:g(r,"style"),body:g(r,"body"),tip:g(r,"tip"),ok:g(r,"ok").toUpperCase()==="O",stops:stops}})
+.filter(function(p){return p.title||p.stops.length||p.body}).filter(function(p){return !REQUIRE_APPROVAL||p.ok}).reverse();
+render()}).catch(function(){msg("글을 불러오지 못했어요.\n잠시 뒤 다시 열어 주세요.")})}
+render();load();
+</script>
+</body>
+</html>
