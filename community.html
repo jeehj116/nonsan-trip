@@ -43,9 +43,12 @@ details[open] .chev{transform:rotate(90deg)}
 .tip{margin-top:4px;padding:8px 10px;border-radius:8px;background:var(--accent2);font-size:.88rem;white-space:pre-wrap;word-break:break-word}
 .msg{text-align:center;color:var(--sub);padding:28px 8px;white-space:pre-wrap}
 .note{font-size:.82rem;color:var(--sub);margin-top:18px}
+.themebtn{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:50;width:40px;height:40px;padding:0;line-height:1;border-radius:50%;border:1.5px solid var(--line);background:var(--card);font-size:1.15rem;cursor:pointer}
 </style>
+<script>(function(){try{var t=localStorage.getItem("nonsan-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
 </head>
 <body>
+<button id="themeBtn" class="themebtn" type="button"></button>
 <div class="wrap">
   <a class="home" href="index.html">🏠 논산 코스 홈으로</a>
   <h1><a class="qz" href="quiz.html" aria-label="논산 역사 퀴즈">💬</a> 논산 코스 공유</h1>
@@ -114,6 +117,13 @@ return{date:(r[0]||"").split(" ").slice(0,3).join(" "),nick:g(r,"nick"),title:g(
 .filter(function(p){return p.title||p.stops.length||p.body}).filter(function(p){return !REQUIRE_APPROVAL||p.ok}).reverse();
 render()}).catch(function(){msg("글을 불러오지 못했어요.\n잠시 뒤 다시 열어 주세요.")})}
 render();load();
+</script>
+<script>
+(function(){var K="nonsan-theme",b=document.getElementById("themeBtn"),r=document.documentElement;
+function dark(){var t=r.getAttribute("data-theme");return t?t==="dark":!!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches)}
+function paint(){var d=dark();b.textContent=d?"☀️":"🌙";b.setAttribute("aria-label",d?"라이트 모드로 바꾸기":"다크 모드로 바꾸기")}
+b.onclick=function(){var n=dark()?"light":"dark";r.setAttribute("data-theme",n);try{localStorage.setItem(K,n)}catch(e){}paint()};
+paint()})();
 </script>
 </body>
 </html>
