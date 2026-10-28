@@ -54,10 +54,10 @@ details[open] .chev{transform:rotate(90deg)}
 </div>
 <script>
 /* ===== 여기 값만 본인 것으로 바꾸세요 ===== */
-var FORM_URL="https://forms.gle/ynoB1iZTUH2cGZzE8";  // 구글 폼 '보내기 → 링크'로 복사한 주소
-var CSV_URL="https://docs.google.com/spreadsheets/d/1kQX-oLyoKf9R3LuhTroz50jSeR5qrAqdJErShCf7TYw/edit?usp=sharing";   // 구글 시트 '웹에 게시 → CSV'로 복사한 주소
-var REQUIRE_APPROVAL=false; // true: 시트 '공개' 칸에 O를 적은 글만 표시 / false: 올라오는 즉시 모두 표시
-var MAX=8;        // 폼의 코스 칸 개수 (코스1 ~ 코스8)
+var FORM_URL="";  // 구글 폼 '보내기 → 링크'로 복사한 주소
+var CSV_URL="";   // 구글 시트 '웹에 게시 → CSV'로 복사한 주소
+var REQUIRE_APPROVAL=true; // true: 시트 '공개' 칸에 O를 적은 글만 표시 / false: 올라오는 즉시 모두 표시
+var MAX=8;        // 폼의 코스 칸 개수 (코스 1 ~ 코스 8)
 /* ========================================= */
 var STYLES=["전체","뚜벅이","관광","식도락","가족 체험","기타"],cur="전체",posts=[];
 var list=document.getElementById("list"),chips=document.getElementById("chips"),wr=document.getElementById("write");
@@ -98,13 +98,13 @@ function load(){
 if(!CSV_URL){msg("아직 연결 전이에요.\n파일 위쪽의 CSV_URL에 구글 시트 주소를 넣어주세요.");return}
 fetch(CSV_URL+(CSV_URL.indexOf("?")>-1?"&":"?")+"t="+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
 var rows=parseCSV(t);if(!rows.length){posts=[];render();return}
-var h=rows[0].map(function(x){return x.trim()}),ix=function(n){return h.indexOf(n)};
+var nz=function(x){return x.replace(/\s/g,"")},h=rows[0].map(nz),ix=function(n){return h.indexOf(nz(n))};
 var I={nick:ix("닉네임"),title:ix("코스 제목"),style:ix("여행 스타일"),body:ix("코스 내용"),tip:ix("한 줄 팁"),ok:ix("공개")},S=[];
-for(var n=1;n<=MAX;n++)S.push([ix("코스"+n+" 장소"),ix("코스"+n+" 설명")]);
-if(I.title<0||S[0][0]<0){msg("시트의 첫 줄 제목이 폼 질문과 달라요.\n질문 제목(코스 제목, 코스1 장소 등)을 확인해 주세요.");return}
+for(var n=1;n<=MAX;n++){var c=ix("코스"+n);S.push(c>=0?c:ix("코스"+n+" 장소"))}
+if(I.title<0||S[0]<0){msg("시트의 첫 줄 제목이 폼 질문과 달라요.\n질문 제목(코스 제목, 코스 1 등)을 확인해 주세요.");return}
 function g(r,k){return I[k]>=0&&r[I[k]]?r[I[k]].trim():""}
 posts=rows.slice(1).map(function(r){
-var stops=[];S.forEach(function(c){var pl=c[0]>=0&&r[c[0]]?r[c[0]].trim():"";if(pl)stops.push({place:pl,desc:c[1]>=0&&r[c[1]]?r[c[1]].trim():""})});
+var stops=[];S.forEach(function(c){var pl=c>=0&&r[c]?r[c].trim():"";if(pl)stops.push({place:pl})});
 return{date:(r[0]||"").split(" ").slice(0,3).join(" "),nick:g(r,"nick"),title:g(r,"title"),style:g(r,"style"),body:g(r,"body"),tip:g(r,"tip"),ok:g(r,"ok").toUpperCase()==="O",stops:stops}})
 .filter(function(p){return p.title||p.stops.length||p.body}).filter(function(p){return !REQUIRE_APPROVAL||p.ok}).reverse();
 render()}).catch(function(){msg("글을 불러오지 못했어요.\n잠시 뒤 다시 열어 주세요.")})}
