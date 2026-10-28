@@ -31,6 +31,11 @@ h1{font-size:1.9rem;margin:0 0 6px}
 .box h3{margin:0 0 2px;font-size:1.05rem}
 .box p{margin:0;color:var(--sub);font-size:.93rem}
 .note{font-size:.82rem;color:var(--sub);margin-top:10px}
+.pin{margin-top:8px;background:var(--accent2);color:var(--accent);border:1px solid var(--accent);border-radius:8px;padding:4px 10px;font:inherit;font-size:.85rem;cursor:pointer}
+.mapbox{margin-top:10px}
+.mapbox iframe{width:100%;height:220px;border:0;border-radius:10px;background:var(--line)}
+.mapbox .links{margin-top:6px;font-size:.85rem}
+.mapbox .links a{color:var(--accent);margin-right:12px}
 .hint{text-align:center;color:var(--sub);padding:28px 0}
 </style>
 </head>
@@ -44,31 +49,31 @@ h1{font-size:1.9rem;margin:0 0 6px}
 <script>
 var DATA={
 walk:{ic:"🚶",name:"뚜벅이",sub:"대중교통 + 걷기",title:"뚜벅이 코스: 강경 근대 골목 도보 여행",desc:"논산역에서 버스로 강경으로 이동해, 걸어서 둘러보는 당일 코스",steps:[
-["오전","논산역에서 강경 이동","버스로 강경 읍내까지 이동해요. 배차 간격은 미리 확인하세요."],
-["오전","강경 근대문화 골목","옛 건물과 골목이 이어져 걸으며 구경하기 좋아요."],
-["점심","강경 젓갈 백반","젓갈 골목 근처 식당에서 한 끼."],
-["오후","강경 젓갈시장 구경","젓갈 가게를 둘러보고 선물을 골라요."],
-["오후","옥녀봉 전망","금강이 내려다보이는 가벼운 산책 코스."],
-["저녁","금강 노을 보고 귀가","강변에서 노을을 보고 버스로 돌아와요."]]},
+["오전","논산역에서 강경 이동","버스로 강경 읍내까지 이동해요. 배차 간격은 미리 확인하세요.","논산역"],
+["오전","강경 근대문화 골목","옛 건물과 골목이 이어져 걸으며 구경하기 좋아요.","강경 근대문화거리"],
+["점심","강경 젓갈 백반","젓갈 골목 근처 식당에서 한 끼.","강경 젓갈백반"],
+["오후","강경 젓갈시장 구경","젓갈 가게를 둘러보고 선물을 골라요.","강경젓갈시장"],
+["오후","옥녀봉 전망","금강이 내려다보이는 가벼운 산책 코스.","강경 옥녀봉"],
+["저녁","금강 노을 보고 귀가","강변에서 노을을 보고 버스로 돌아와요.","강경 금강변"]]},
 tour:{ic:"🏯",name:"관광",sub:"명소 중심",title:"관광 코스: 논산 대표 명소 한 바퀴",desc:"자동차 기준, 역사와 풍경을 하루에 보는 코스",steps:[
-["오전","관촉사 (은진미륵)","큰 석불 입상으로 유명한 논산의 대표 사찰."],
-["점심","논산 시내 식사","한식당에서 점심."],
-["오후","선샤인랜드","근대 드라마 세트 분위기의 촬영지 테마 공간."],
-["오후","탑정호 출렁다리","호수 위를 걷는 긴 출렁다리와 수변 풍경."],
-["저녁","탑정호 노을·야경","호수 주변에서 해 질 녘 산책."]]},
+["오전","관촉사 (은진미륵)","큰 석불 입상으로 유명한 논산의 대표 사찰.","관촉사"],
+["점심","논산 시내 식사","한식당에서 점심.","논산 맛집"],
+["오후","선샤인랜드","근대 드라마 세트 분위기의 촬영지 테마 공간.","논산 선샤인랜드"],
+["오후","탑정호 출렁다리","호수 위를 걷는 긴 출렁다리와 수변 풍경.","탑정호 출렁다리"],
+["저녁","탑정호 노을·야경","호수 주변에서 해 질 녘 산책.","탑정호"]]},
 food:{ic:"🍽️",name:"식도락",sub:"맛집·특산물",title:"식도락 코스: 논산의 맛 따라가기",desc:"딸기, 젓갈, 곶감 등 논산 먹거리 중심 코스",steps:[
-["오전","논산 딸기 디저트","딸기 철에는 딸기 디저트 카페를 먼저 들러요."],
-["점심","강경 젓갈 백반","젓갈이 곁들여진 백반 한 상."],
-["오후","강경 젓갈시장","젓갈 시식과 구매."],
-["오후","지역 시장 간식","시장에서 간식과 특산물 구경."],
-["저녁","향토 음식 저녁","논산 시내에서 저녁. 특산물 요리를 찾아보세요."]],
+["오전","논산 딸기 디저트","딸기 철에는 딸기 디저트 카페를 먼저 들러요.","논산 딸기 카페"],
+["점심","강경 젓갈 백반","젓갈이 곁들여진 백반 한 상.","강경 젓갈백반"],
+["오후","강경 젓갈시장","젓갈 시식과 구매.","강경젓갈시장"],
+["오후","지역 시장 간식","시장에서 간식과 특산물 구경.","논산 화지중앙시장"],
+["저녁","향토 음식 저녁","논산 시내에서 저녁. 특산물 요리를 찾아보세요.","논산 맛집"]],
 note:"딸기는 겨울~봄이 제철이고, 곶감은 가을~겨울이에요. 계절을 확인하세요."},
 family:{ic:"👨‍👩‍👧",name:"가족 체험",sub:"아이와 함께",title:"가족 체험 코스: 아이와 함께 즐기기",desc:"체험과 놀거리를 섞은 가족 당일 코스",steps:[
-["오전","딸기 따기 체험 (철 한정)","체험 농장을 사전에 예약하고 방문해요."],
-["점심","가족 식사","아이가 먹기 편한 메뉴로 점심."],
-["오후","선샤인랜드","아이들과 사진 찍고 구경하기 좋아요."],
-["오후","백제군사박물관","역사를 쉽게 보는 전시 공간."],
-["저녁","탑정호 수변 산책","가볍게 걸으며 하루 마무리."]]}
+["오전","딸기 따기 체험 (철 한정)","체험 농장을 사전에 예약하고 방문해요.","논산 딸기체험농장"],
+["점심","가족 식사","아이가 먹기 편한 메뉴로 점심.","논산 가족 식당"],
+["오후","선샤인랜드","아이들과 사진 찍고 구경하기 좋아요.","논산 선샤인랜드"],
+["오후","백제군사박물관","역사를 쉽게 보는 전시 공간.","백제군사박물관"],
+["저녁","탑정호 수변 산책","가볍게 걸으며 하루 마무리.","탑정호 수변생태공원"]]}
 };
 var keys=Object.keys(DATA),grid=document.getElementById("grid"),res=document.getElementById("result");
 keys.forEach(function(k){var d=DATA[k],b=document.createElement("button");b.className="opt";b.id="o-"+k;
@@ -77,9 +82,13 @@ b.onclick=function(){show(k)};grid.appendChild(b)});
 function show(k){var d=DATA[k];
 keys.forEach(function(x){document.getElementById("o-"+x).classList.toggle("on",x===k)});
 var h='<div class="head"><h2>'+d.title+'</h2><p>'+d.desc+'</p></div>';
-d.steps.forEach(function(s,i){h+='<div class="step"><div class="num">'+(i+1)+'</div><div class="box"><div class="t">'+s[0]+'</div><h3>'+s[1]+'</h3><p>'+s[2]+'</p></div></div>'});
+d.steps.forEach(function(s,i){h+='<div class="step"><div class="num">'+(i+1)+'</div><div class="box"><div class="t">'+s[0]+'</div><h3>'+s[1]+'</h3><p>'+s[2]+'</p>'+(s[3]?'<button class="pin" data-q="'+s[3]+'">📍 지도 보기</button><div class="mapbox" hidden></div>':'')+'</div></div>'});
 h+='<div class="note">'+(d.note?d.note+"<br>":"")+"※ 운영시간과 휴무일은 방문 전에 꼭 확인하세요.</div>";
 res.innerHTML=h;
+res.querySelectorAll(".pin").forEach(function(p){p.onclick=function(){
+var m=p.nextElementSibling,q=p.getAttribute("data-q"),e=encodeURIComponent(q);
+if(!m.hasChildNodes()){m.innerHTML='<iframe loading="lazy" src="https://maps.google.com/maps?q='+e+'&output=embed&hl=ko" title="'+q+' 지도"></iframe><div class="links"><a target="_blank" rel="noopener" href="https://map.kakao.com/link/search/'+e+'">카카오맵</a><a target="_blank" rel="noopener" href="https://map.naver.com/p/search/'+e+'">네이버지도</a></div>'}
+m.hidden=!m.hidden;p.textContent=m.hidden?"📍 지도 보기":"✕ 지도 닫기"}});
 try{history.replaceState(null,"","#"+k)}catch(e){}
 res.scrollIntoView({behavior:"smooth",block:"start"})}
 var h0=(location.hash||"").slice(1);if(DATA[h0])show(h0);
